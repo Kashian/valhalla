@@ -3,7 +3,7 @@
 #include <vector>
 
 #include "gurka.h"
-#include "mjolnir/landmark_builder.h"
+#include "mjolnir/landmarks.h"
 #include "test/test.h"
 #include <boost/property_tree/ptree.hpp>
 

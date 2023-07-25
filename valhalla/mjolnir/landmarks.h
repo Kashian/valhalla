@@ -92,12 +92,33 @@ inline LandmarkType string_to_landmark_type(const std::string& s) {
 
 struct LandmarkDatabase {
 public:
+  /**
+   * TODO:
+   * @param db_name
+   * @param read_only
+   */
   LandmarkDatabase(const std::string& db_name, bool read_only);
 
+  /**
+   * TODO:
+   * @param name
+   * @param type
+   * @param lng
+   * @param lat
+   */
   void insert_landmark(const std::string& name,
                        const LandmarkType& type,
                        const double lng,
                        const double lat);
+
+  /**
+   * TODO:
+   * @param minLat
+   * @param minLong
+   * @param maxLat
+   * @param maxLong
+   * @return
+   */
   std::vector<Landmark> get_landmarks_in_bounding_box(const double minLat,
                                                       const double minLong,
                                                       const double maxLat,
@@ -108,8 +129,22 @@ protected:
   std::shared_ptr<db_pimpl> pimpl;
 };
 
+/**
+ * TODO:
+ * @param pt
+ * @param input_files
+ * @return
+ */
 bool BuildLandmarkFromPBF(const boost::property_tree::ptree& pt,
                           const std::vector<std::string>& input_files);
+
+/**
+ * TODO:
+ * @param pt
+ * @param input_files
+ * @return
+ */
+bool AddLandmarks(const boost::property_tree::ptree& pt);
 
 } // namespace mjolnir
 
