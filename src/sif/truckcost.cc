@@ -551,7 +551,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       turn_cost = kTCCrossing;
     } else {
       turn_cost = (node->drive_on_right())
-                      ? drive_on_right[static_cast<uint32_t>(edge->turntype(idx))]
+                      ? kRightSideTurnCosts[static_cast<uint32_t>(edge->turntype(idx))]
                       : kLeftSideTurnCosts[static_cast<uint32_t>(edge->turntype(idx))];
     }
 
