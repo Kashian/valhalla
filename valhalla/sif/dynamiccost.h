@@ -106,8 +106,8 @@ constexpr float kMaxPenalty = 12.0f * midgard::kSecPerHour; // 12 hours
 constexpr float kMaxFerryPenalty = 6.0f * midgard::kSecPerHour; // 6 hours
 
 // Default uturn costs
-constexpr float kTCUnfavorablePencilPointUturn = 15.f;
-constexpr float kTCUnfavorableUturn = 600.f;
+constexpr float kTCUnfavorablePencilPointUturn = 25.f;
+constexpr float kTCUnfavorableUturn = 800.f;
 
 // Maximum highway avoidance bias (modulates the highway factors based on road class)
 constexpr float kMaxHighwayBiasFactor = 8.0f;

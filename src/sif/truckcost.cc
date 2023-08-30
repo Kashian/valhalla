@@ -30,11 +30,10 @@ namespace {
 constexpr float kDefaultServicePenalty = 0.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds
+constexpr float kDefaultLowClassPenalty = 90.0f; // Seconds
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
-constexpr float kDefaultUseLivingStreets =
-    0.f;                                    // Avoid living streets by default. Factor between 0 and 1
+constexpr float kDefaultUseLivingStreets =0.f;   // Avoid living streets by default. Factor between 0 and 1
 constexpr float kDefaultUseHighways = 0.5f; // Factor between 0 and 1
 
 // Default turn costs
@@ -43,8 +42,8 @@ constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
 constexpr float kTCCrossing = 2.0f;
-constexpr float kTCUnfavorable = 2.5f;
-constexpr float kTCUnfavorableSharp = 3.5f;
+constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
+constexpr float kTCUnfavorableSharp = 5.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
@@ -68,13 +67,13 @@ constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
     1.0f, // Motorway
-    0.5f, // Trunk
-    0.0f, // Primary
+    0.8f, // Trunk
+    0.6f, // Primary  #Original=0.0f
     0.0f, // Secondary
-    0.0f, // Tertiary
-    0.0f, // Unclassified
-    0.0f, // Residential
-    0.0f  // Service, other
+    0.f, // Tertiary
+    0.f, // Unclassified
+    0.f, // Residential
+    0.f  // Service, other
 };
 
 constexpr float kSurfaceFactor[] = {
@@ -479,8 +478,9 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-
+  float all_edges_factor = 0.1f;  // #Original - Not exist - Added by Kashian
   float sec = edge->length() * speedfactor_[final_speed];
+  float sec_cost = edge->length() * speedfactor_[final_speed] * all_edges_factor;  // #Added by kashian  
 
   if (shortest_) {
     return Cost(edge->length(), sec);
@@ -523,7 +523,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     factor *= closure_factor_;
   }
 
-  return {sec * factor, sec};
+  return {sec_cost * factor, sec};
 }
 
 // Returns the time (in seconds) to make the transition from the predecessor
@@ -537,8 +537,10 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
   c.secs = OSRMCarTurnDuration(edge, node, idx);
 
   // Penalty to transition onto low class roads.
+  // #kTertiary added by kashian
   if (edge->classification() == baldr::RoadClass::kResidential ||
-      edge->classification() == baldr::RoadClass::kServiceOther) {
+      edge->classification() == baldr::RoadClass::kServiceOther ||
+      edge->classification() == baldr::RoadClass::kTertiary) {
     c.cost += low_class_penalty_;
   }
 
@@ -549,7 +551,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       turn_cost = kTCCrossing;
     } else {
       turn_cost = (node->drive_on_right())
-                      ? kRightSideTurnCosts[static_cast<uint32_t>(edge->turntype(idx))]
+                      ? drive_on_right[static_cast<uint32_t>(edge->turntype(idx))]
                       : kLeftSideTurnCosts[static_cast<uint32_t>(edge->turntype(idx))];
     }
 
@@ -644,7 +646,13 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
-    if (has_left || has_right || has_reverse) {
+
+    float left_turn_reverse_penalty = 3.0f;
+    if (has_left || has_reverse) {
+      seconds *= edge->stopimpact(idx)*left_turn_reverse_penalty;
+      is_turn = true;
+    }
+    if (has_right) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
