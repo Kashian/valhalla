@@ -41,7 +41,7 @@ constexpr float kTCStraight = 0.5f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 2.0f;
+constexpr float kTCCrossing = 3.0f;
 constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 5.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
@@ -67,9 +67,9 @@ constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
     1.0f, // Motorway
-    0.8f, // Trunk
-    0.6f, // Primary  #Original=0.0f
-    0.0f, // Secondary
+    0.7f, // Trunk
+    0.f, // Primary  #Original=0.0f
+    0.f, // Secondary
     0.f, // Tertiary
     0.f, // Unclassified
     0.f, // Residential
@@ -81,8 +81,8 @@ constexpr float kSurfaceFactor[] = {
     0.0f, // kPaved
     0.0f, // kPaveRough
     0.1f, // kCompacted
-    0.2f, // kDirt
-    0.5f, // kGravel
+    0.8f, // kDirt
+    1.0f, // kGravel
     1.0f  // kPath
 };
 
@@ -478,7 +478,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-  float all_edges_factor = 0.1f;  // #Original - Not exist - Added by Kashian
+  float all_edges_factor = 0.5f;  // #Original - Not exist - Added by Kashian
   float sec = edge->length() * speedfactor_[final_speed];
   float sec_cost = edge->length() * speedfactor_[final_speed] * all_edges_factor;  // #Added by kashian  
 
