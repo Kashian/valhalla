@@ -627,7 +627,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
   // Transition time = turncost * stopimpact * densityfactor
   if (edge->stopimpact(idx) > 0 && !shortest_) {
-    LOG_WARN("Exceeding maximum stop impact: " + std::to_string(stopimpact));
+    LOG_WARN("Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
 
     float turn_cost;
     if (edge->edge_to_right(idx) && edge->edge_to_left(idx)) {
