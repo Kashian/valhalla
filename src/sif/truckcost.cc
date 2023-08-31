@@ -582,7 +582,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       is_turn = true;
     }
     if (has_left) {
-      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx));   //# Added by kashian 
+      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));   //# Added by kashian 
       seconds *= edge->stopimpact(idx) * left_turn_penalty;
       is_turn = true;
     }
@@ -592,7 +592,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Apply density factor and stop impact penalty if there isn't traffic on this edge or you're not
     // using traffic
     if (!pred.has_measured_speed()) {
-      LOG_WARN("Density penalty applied: " + std::to_string(trans_density_factor_[node->density())));
+      LOG_WARN("Density penalty applied: " + std::to_string(trans_density_factor_[node->density()));
 
       if (!is_turn)
         seconds *= edge->stopimpact(idx);
