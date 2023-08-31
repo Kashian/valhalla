@@ -535,13 +535,14 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
   uint32_t idx = pred.opp_local_idx();
   Cost c = base_transition_cost(node, edge, &pred, idx);
   c.secs = OSRMCarTurnDuration(edge, node, idx);
-
+  
   // Penalty to transition onto low class roads.
   // #kTertiary added by kashian
   if (edge->classification() == baldr::RoadClass::kResidential ||
       edge->classification() == baldr::RoadClass::kServiceOther ||
       edge->classification() == baldr::RoadClass::kTertiary) {
-    c.cost += low_class_penalty_;
+        LOG_WARN("Low class penalty is applied: " + std::to_string(low_class_penalty_)));
+        c.cost += low_class_penalty_;
   }
 
   // Transition time = turncost * stopimpact * densityfactor
@@ -591,6 +592,8 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Apply density factor and stop impact penalty if there isn't traffic on this edge or you're not
     // using traffic
     if (!pred.has_measured_speed()) {
+      LOG_WARN("Density penalty applied: " + std::to_string(trans_density_factor_[node->density())));
+
       if (!is_turn)
         seconds *= edge->stopimpact(idx);
       seconds *= trans_density_factor_[node->density()];
