@@ -466,6 +466,8 @@ void DirectedEdge::set_edge_to_left(const uint32_t localidx, const bool left) {
 // Set the stop impact when transitioning from the prior edge (given
 // by the local index of the corresponding inbound edge at the node).
 void DirectedEdge::set_stopimpact(const uint32_t localidx, const uint32_t stopimpact) {
+  LOG_WARN("Stop impact value: " + std::to_string(stopimpact));  //# Added by kashian for logging
+
   if (stopimpact > kMaxStopImpact) {
     LOG_WARN("Exceeding maximum stop impact: " + std::to_string(stopimpact));
     stopimpact_.s.stopimpact = OverwriteBits(stopimpact_.s.stopimpact, kMaxStopImpact, localidx, 3);

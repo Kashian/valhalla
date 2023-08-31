@@ -30,20 +30,20 @@ namespace {
 constexpr float kDefaultServicePenalty = 0.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 90.0f; // Seconds
+constexpr float kDefaultLowClassPenalty = 0.0f; // Seconds   #default 90.0
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
-constexpr float kDefaultUseLivingStreets =0.f;   // Avoid living streets by default. Factor between 0 and 1
-constexpr float kDefaultUseHighways = 0.5f; // Factor between 0 and 1
+constexpr float kDefaultUseLivingStreets =1.0f;   // Avoid living streets by default. Factor between 0 and 1
+constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 
 // Default turn costs
 constexpr float kTCStraight = 0.5f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 3.0f;
-constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
-constexpr float kTCUnfavorableSharp = 5.5f;  //Original = 3.5f
+constexpr float kTCCrossing = 0.5f;  // # Original = 3.5
+constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
+constexpr float kTCUnfavorableSharp = 3.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
@@ -52,7 +52,7 @@ constexpr float kDefaultTruckAxleLoad = 9.07f; // Metric Tons (20,000 lbs)
 constexpr float kDefaultTruckHeight = 4.11f;   // Meters (13 feet 6 inches)
 constexpr float kDefaultTruckWidth = 2.6f;     // Meters (102.36 inches)
 constexpr float kDefaultTruckLength = 21.64f;  // Meters (71 feet)
-constexpr uint8_t kDefaultAxleCount = 5;       // 5 axles for above truck config
+constexpr uint8_t kDefaultAxleCount = 2;       // 5 axles for above truck config
 
 // Turn costs based on side of street driving
 constexpr float kRightSideTurnCosts[] = {kTCStraight,       kTCSlight,  kTCFavorable,
@@ -67,9 +67,9 @@ constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
     1.0f, // Motorway
-    0.7f, // Trunk
-    0.f, // Primary  #Original=0.0f
-    0.f, // Secondary
+    0.9f, // Trunk
+    0.5f, // Primary  #Original=0.0f
+    0.5f, // Secondary
     0.f, // Tertiary
     0.f, // Unclassified
     0.f, // Residential
@@ -573,13 +573,20 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
-    if (has_left || has_right || has_reverse) {
+    float left_turn_penalty = 2.0f;
+    if (has_right || has_reverse) {
+      LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
+
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
+    if (has_left) {
+      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));   //# Added by kashian 
+      seconds *= edge->stopimpact(idx) * left_turn_penalty;
+      is_turn = true;
+    }
 
-    AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(),
-                    seconds);
+    AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(), seconds);
 
     // Apply density factor and stop impact penalty if there isn't traffic on this edge or you're not
     // using traffic
@@ -590,6 +597,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     }
     c.cost += seconds;
   }
+  LOG_WARN("----> Transition cost: " + std::to_string(c.cost));
   return c;
 }
 
@@ -619,6 +627,8 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
   // Transition time = turncost * stopimpact * densityfactor
   if (edge->stopimpact(idx) > 0 && !shortest_) {
+    LOG_WARN("Exceeding maximum stop impact: " + std::to_string(stopimpact));
+
     float turn_cost;
     if (edge->edge_to_right(idx) && edge->edge_to_left(idx)) {
       turn_cost = kTCCrossing;
