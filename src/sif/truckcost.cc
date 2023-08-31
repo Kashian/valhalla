@@ -541,7 +541,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
   if (edge->classification() == baldr::RoadClass::kResidential ||
       edge->classification() == baldr::RoadClass::kServiceOther ||
       edge->classification() == baldr::RoadClass::kTertiary) {
-        LOG_WARN("Low class penalty is applied: " + std::to_string(low_class_penalty_)));
+        LOG_WARN("Low class penalty is applied: " + std::to_string(low_class_penalty_));
         c.cost += low_class_penalty_;
   }
 
