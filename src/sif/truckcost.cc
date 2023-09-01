@@ -30,20 +30,20 @@ namespace {
 constexpr float kDefaultServicePenalty = 0.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 0.0f; // Seconds   #default 90.0
+constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds   #default 90.0
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
 constexpr float kDefaultUseLivingStreets =1.0f;   // Avoid living streets by default. Factor between 0 and 1
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 
 // Default turn costs
-constexpr float kTCStraight = 0.5f;
+constexpr float kTCStraight = 0.4f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 0.5f;  // # Original = 3.5
-constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
-constexpr float kTCUnfavorableSharp = 3.5f;  //Original = 3.5f
+constexpr float kTCCrossing = 1.5f;  // # Original = 3.5
+constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
+constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
@@ -558,9 +558,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
 
     if ((edge->use() != Use::kRamp && pred.use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred.use() != Use::kRamp)) {
-      turn_cost += 1.5f;
+      turn_cost += 15.f;
       if (edge->roundabout())
-        turn_cost += 0.5f;
+        turn_cost += 60.f;
     }
 
     float seconds = turn_cost;
@@ -574,7 +574,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
-    float left_turn_penalty = 2.0f;
+    float left_turn_penalty = 400.0f;  //#Cost for left turn transition
     if (has_right || has_reverse) {
       LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
 
@@ -583,7 +583,8 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     }
     if (has_left) {
       LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));   //# Added by kashian 
-      seconds *= edge->stopimpact(idx) * left_turn_penalty;
+      seconds *= edge->stopimpact(idx) 
+      seconds += left_turn_penalty;
       is_turn = true;
     }
 
@@ -660,12 +661,13 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
 
-    float left_turn_reverse_penalty = 3.0f;
-    if (has_left || has_reverse) {
-      seconds *= edge->stopimpact(idx)*left_turn_reverse_penalty;
+    float left_turn_reverse_penalty = 400.0f;
+    if (has_left) {
+      seconds *= edge->stopimpact(idx);
+      seconds += left_turn_penalty;
       is_turn = true;
     }
-    if (has_right) {
+    if (has_righ || || has_reverse) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
