@@ -667,7 +667,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
       seconds += left_turn_penalty;
       is_turn = true;
     }
-    if (has_right || || has_reverse) {
+    if (has_right || has_reverse) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
