@@ -522,6 +522,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     // Add a penalty for traversing a closed edge
     factor *= closure_factor_;
   }
+  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor:",std::to_string(factor));
 
   return {sec_cost * factor, sec};
 }
@@ -644,9 +645,9 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
     if ((edge->use() != Use::kRamp && pred->use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred->use() != Use::kRamp)) {
-      turn_cost += 1.5f;
+      turn_cost += 15.f;
       if (edge->roundabout())
-        turn_cost += 0.5f;
+        turn_cost += 60.f;
     }
 
     float seconds = turn_cost;
