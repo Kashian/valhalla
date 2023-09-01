@@ -522,7 +522,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     // Add a penalty for traversing a closed edge
     factor *= closure_factor_;
   }
-  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor:",std::to_string(factor));
+  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor: "+ std::to_string(factor));
 
   return {sec_cost * factor, sec};
 }
