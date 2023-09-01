@@ -583,7 +583,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     }
     if (has_left) {
       LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));   //# Added by kashian 
-      seconds *= edge->stopimpact(idx) 
+      seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty;
       is_turn = true;
     }
@@ -661,13 +661,13 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
 
-    float left_turn_reverse_penalty = 400.0f;
+    float left_turn_penalty = 400.0f;
     if (has_left) {
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty;
       is_turn = true;
     }
-    if (has_righ || || has_reverse) {
+    if (has_right || || has_reverse) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
