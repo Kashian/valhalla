@@ -478,7 +478,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-  float all_edges_factor = 0.5f;  // #Original - Not exist - Added by Kashian
+  float all_edges_factor = 0.8f;  // #Original - Not exist - Added by Kashian
   float sec = edge->length() * speedfactor_[final_speed];
   float sec_cost = edge->length() * speedfactor_[final_speed] * all_edges_factor;  // #Added by kashian  
 
