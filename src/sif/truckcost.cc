@@ -66,14 +66,14 @@ constexpr float kLeftSideTurnCosts[] = {kTCStraight,         kTCSlight,  kTCUnfa
 constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
-    1.0f, // Motorway
-    0.9f, // Trunk
-    0.5f, // Primary  #Original=0.0f
-    0.5f, // Secondary
-    0.f, // Tertiary
-    0.f, // Unclassified
-    0.f, // Residential
-    0.f  // Service, other
+    0.0f, // Motorway
+    0.0f, // Trunk
+    0.2f, // Primary  #Original=0.0f
+    0.3f, // Secondary
+    0.6, // Tertiary
+    0.7, // Unclassified
+    0.9, // Residential
+    1.0f  // Service, other
 };
 
 constexpr float kSurfaceFactor[] = {
@@ -344,10 +344,13 @@ TruckCost::TruckCost(const Costing& costing)
   if (use_highways >= 0.5f) {
     float f = (0.5f - use_highways);
     highway_factor_ = f * f * f;
+    LOG_WARN("======> Use Highways >0.5 " + std::to_string(highway_factor_));
   } else {
     float f = 1.0f - (use_highways * 2.0f);
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
+    LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
   }
+  
 
   // Preference to use toll roads (separate from toll booth penalty). Sets a toll
   // factor. A toll factor of 0 would indicate no adjustment to weighting for toll roads.

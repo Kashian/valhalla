@@ -382,6 +382,7 @@ AutoCost::AutoCost(const Costing& costing, uint32_t access_mask)
   if (use_highways >= 0.5f) {
     float f = (0.5f - use_highways);
     highway_factor_ = f * f * f;
+    
   } else {
     float f = 1.0f - (use_highways * 2.0f);
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
