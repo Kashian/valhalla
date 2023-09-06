@@ -30,7 +30,7 @@ namespace {
 constexpr float kDefaultServicePenalty = 0.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds   #default 90.0
+constexpr float kDefaultLowClassPenalty = 90.0f; // Seconds   #default 90.0
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
 constexpr float kDefaultUseLivingStreets =1.0f;   // Avoid living streets by default. Factor between 0 and 1
@@ -41,15 +41,15 @@ constexpr float kTCStraight = 0.4f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 1.5f;  // # Original = 3.5
-constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
+constexpr float kTCCrossing = 3.5f;  // # Original = 3.5
+constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
 constexpr float kDefaultTruckWeight = 21.77f;  // Metric Tons (48,000 lbs)
-constexpr float kDefaultTruckAxleLoad = 9.07f; // Metric Tons (20,000 lbs)
-constexpr float kDefaultTruckHeight = 4.11f;   // Meters (13 feet 6 inches)
+constexpr float kDefaultTruckAxleLoad = 7.5f; // Metric Tons (20,000 lbs)  #Default 9.07
+constexpr float kDefaultTruckHeight = 4.0f;   // Meters (13 feet 6 inches) #Default 4.11
 constexpr float kDefaultTruckWidth = 2.6f;     // Meters (102.36 inches)
 constexpr float kDefaultTruckLength = 21.64f;  // Meters (71 feet)
 constexpr uint8_t kDefaultAxleCount = 2;       // 5 axles for above truck config
@@ -68,8 +68,8 @@ constexpr float kTruckRouteFactor = 0.85f;
 constexpr float kHighwayFactor[] = {
     0.0f, // Motorway
     0.0f, // Trunk
-    0.2f, // Primary  #Original=0.0f
-    0.3f, // Secondary
+    0.4f, // Primary  #Original=0.0f
+    0.5f, // Secondary
     0.6, // Tertiary
     0.7, // Unclassified
     0.9, // Residential
@@ -481,7 +481,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-  float all_edges_factor = 0.8f;  // #Original - Not exist - Added by Kashian
+  float all_edges_factor = 1.0f;  // #Original - Not exist - Added by Kashian
   float sec = edge->length() * speedfactor_[final_speed];
   float sec_cost = edge->length() * speedfactor_[final_speed] * all_edges_factor;  // #Added by kashian  
 
