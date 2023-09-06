@@ -41,7 +41,7 @@ constexpr float kTCStraight = 0.4f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 3.5f;  // # Original = 3.5
+constexpr float kTCCrossing = 1.0f;  // # Original = 3.5
 constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
