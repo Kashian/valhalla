@@ -27,21 +27,21 @@ namespace {
 // Base transition costs
 // Note: all roads of class "Service, other" are already penalized with low_class_penalty, so for
 // generic service roads these penalties will add up
-constexpr float kDefaultServicePenalty = 0.0f; // Seconds
+constexpr float kDefaultServicePenalty = 10.0f; // Seconds
 
 // Other options
 constexpr float kDefaultLowClassPenalty = 10.0f; // Seconds   #default 90.0
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
-constexpr float kDefaultUseLivingStreets =1.0f;   // Avoid living streets by default. Factor between 0 and 1
+constexpr float kDefaultUseLivingStreets = 0.2f;   // Avoid living streets by default. Factor between 0 and 1
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 
 // Default turn costs
-constexpr float kTCStraight = 0.4f;
-constexpr float kTCSlight = 0.75f;
+constexpr float kTCStraight = 0.2f;
+constexpr float kTCSlight = 0.65f;
 constexpr float kTCFavorable = 1.0f;
 constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 1.0f;  // # Original = 3.5
+constexpr float kTCCrossing = 2.0f;  // # Original = 3.5
 constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
@@ -69,9 +69,9 @@ constexpr float kHighwayFactor[] = {
     0.0f, // Motorway
     0.0f, // Trunk
     0.4f, // Primary  #Original=0.0f
-    0.5f, // Secondary
-    0.6, // Tertiary
-    0.7, // Unclassified
+    0.6f, // Secondary
+    0.7, // Tertiary
+    0.9, // Unclassified
     0.9, // Residential
     1.0f  // Service, other
 };
