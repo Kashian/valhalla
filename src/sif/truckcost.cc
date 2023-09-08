@@ -67,7 +67,7 @@ constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
     0.0f, // Motorway
-    0.0f, // Trunk
+    0.1f, // Trunk
     0.4f, // Primary  #Original=0.0f
     0.6f, // Secondary
     0.7, // Tertiary
