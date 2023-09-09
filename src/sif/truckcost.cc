@@ -504,7 +504,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed);
       break;
   }
-
+  LOG_WARN("### Speed Penalty: " + std::to_string(SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed)));
   if (edge->truck_route() > 0) {
     factor *= kTruckRouteFactor;
   }
@@ -525,7 +525,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     // Add a penalty for traversing a closed edge
     factor *= closure_factor_;
   }
-  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor: "+ std::to_string(factor));
+  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor: "+ std::to_string(factor)+"  Name:" + edge->name());
 
   return {sec_cost * factor, sec};
 }
