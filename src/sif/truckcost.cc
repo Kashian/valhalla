@@ -37,11 +37,11 @@ constexpr float kDefaultUseLivingStreets = 0.2f;   // Avoid living streets by de
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 
 // Default turn costs
-constexpr float kTCStraight = 0.2f;
-constexpr float kTCSlight = 0.65f;
+constexpr float kTCStraight = 1.0f;
+constexpr float kTCSlight = 1.0f;
 constexpr float kTCFavorable = 1.0f;
-constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 2.0f;  // # Original = 3.5
+constexpr float kTCFavorableSharp = 1.0f;
+constexpr float kTCCrossing = 1.0f;  // # Original = 3.5
 constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
@@ -481,9 +481,9 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-  float all_edges_factor = 1.0f;  // #Original - Not exist - Added by Kashian
+  float all_edges_factor = 0.1f;  // #Original - Not exist - Added by Kashian
   float sec = edge->length() * speedfactor_[final_speed];
-  float sec_cost = edge->length() * speedfactor_[final_speed] * all_edges_factor;  // #Added by kashian  
+  float sec_cost = sec * all_edges_factor;  // #Added by kashian  
 
   if (shortest_) {
     return Cost(edge->length(), sec);
@@ -525,7 +525,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     // Add a penalty for traversing a closed edge
     factor *= closure_factor_;
   }
-  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor: "+ std::to_string(factor)+  " duration" +std::to_string(sec));
+  LOG_WARN("Edge cost in seconds: " + std::to_string(sec_cost)+ "    factor: "+ std::to_string(factor)+  " duration: " +std::to_string(sec));
 
   return {sec_cost * factor, sec};
 }
