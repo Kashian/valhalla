@@ -30,7 +30,7 @@ namespace {
 constexpr float kDefaultServicePenalty = 10.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 10.0f; // Seconds   #default 90.0
+constexpr float kDefaultLowClassPenalty = 50.0f; // Seconds   #default 90.0
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
 constexpr float kDefaultUseLivingStreets = 0.2f;   // Avoid living streets by default. Factor between 0 and 1
