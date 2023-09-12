@@ -582,7 +582,8 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     if (has_right || has_reverse) {
       LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
 
-      seconds *= edge->stopimpact(idx);
+      //seconds *= edge->stopimpact(idx);
+      
       is_turn = true;
     }
     if (has_left) {
@@ -672,7 +673,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
       is_turn = true;
     }
     if (has_right || has_reverse) {
-      seconds *= edge->stopimpact(idx);
+      //seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
 
