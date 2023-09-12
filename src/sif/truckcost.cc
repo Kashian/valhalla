@@ -37,11 +37,11 @@ constexpr float kDefaultUseLivingStreets = 0.2f;   // Avoid living streets by de
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 
 // Default turn costs
-constexpr float kTCStraight = 1.0f;
+constexpr float kTCStraight = 0.7f;
 constexpr float kTCSlight = 1.0f;
 constexpr float kTCFavorable = 1.0f;
-constexpr float kTCFavorableSharp = 1.0f;
-constexpr float kTCCrossing = 1.0f;  // # Original = 3.5
+constexpr float kTCFavorableSharp = 1.5f;
+constexpr float kTCCrossing = 2.5f;  // # Original = 3.5
 constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
@@ -502,6 +502,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())] +
                kSurfaceFactor[static_cast<uint32_t>(edge->surface())] +
                SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed);
+      LOG_WARN("# Density Factor:" + std::to_string(density_factor_[edge->density()])+ "  highway_factor: "+ std::to_string(highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())]) + "   Surface Factor:"+std::to_string(kSurfaceFactor[static_cast<uint32_t>(edge->surface())]) + " Total factor:"+std::to_string(factor) );
       break;
   }
   LOG_WARN("### Speed Penalty: " + std::to_string(SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed)));
@@ -578,7 +579,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
-    float left_turn_penalty = 400.0f;  //#Cost for left turn transition
+    float left_turn_penalty = 90.0f;  //#Cost for left turn transition
     if (has_right || has_reverse) {
       LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
 
@@ -666,7 +667,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
 
-    float left_turn_penalty = 400.0f;
+    float left_turn_penalty = 90.0f;
     if (has_left) {
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty;
