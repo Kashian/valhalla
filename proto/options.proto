@@ -313,7 +313,7 @@ message Costing {
     bool disable_hierarchy_pruning = 83;
 
     oneof has_left_turn_penalty {    //Added by kashian - adding penalty for left turns in seconds in input parameters
-      float has_left_turn_penalty = 84;
+      float left_turn_penalty = 84;
     }
 
   }
