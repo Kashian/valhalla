@@ -324,6 +324,10 @@ TruckCost::TruckCost(const Costing& costing)
 
   low_class_penalty_ = costing_options.low_class_penalty();
 
+  // Added by Kashian
+  // To avoid left turns and adding a cost in seconds. 
+  left_turn_penalty_ = costing_options.left_turn_penalty();
+
   // Get the vehicle attributes
   hazmat_ = costing_options.hazmat();
   weight_ = costing_options.weight();
@@ -355,9 +359,6 @@ TruckCost::TruckCost(const Costing& costing)
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
     LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
   }
-  // Added by Kashian
-  // To avoid left turns and adding a cost in seconds. 
-  float left_turn_penalty_ = costing_options.left_turn_penalty();
 
 
   // Preference to use toll roads (separate from toll booth penalty). Sets a toll
