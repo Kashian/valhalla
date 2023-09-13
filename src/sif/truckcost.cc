@@ -294,6 +294,7 @@ public:
   float density_factor_[16]; // Density factor
   float toll_factor_;        // Factor applied when road has a toll
   float low_class_penalty_;  // Penalty (seconds) to go to residential or service road
+  float left_turn_penalty_; // Penalty (seconds) to have left turn maneuver
 
   // Vehicle attributes (used for special restrictions and costing)
   bool hazmat_;          // Carrying hazardous materials
@@ -356,7 +357,7 @@ TruckCost::TruckCost(const Costing& costing)
   }
   // Added by Kashian
   // To avoid left turns and adding a cost in seconds. 
-  float left_turn_penalty = costing_options.left_turn_penalty();
+  float left_turn_penalty_ = costing_options.left_turn_penalty();
 
 
   // Preference to use toll roads (separate from toll booth penalty). Sets a toll
@@ -593,9 +594,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       is_turn = true;
     }
     if (has_left) {
-      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty));   //# Added by kashian 
+      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      seconds += left_turn_penalty;
+      seconds += left_turn_penalty_;
       is_turn = true;
     }
 
@@ -672,14 +673,14 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
 
-    float left_turn_penalty = 30.0f;
+    //float left_turn_penalty = 30.0f;
     if (has_left) {
       seconds *= edge->stopimpact(idx);
-      seconds += left_turn_penalty;
+      seconds += left_turn_penalty_;
       is_turn = true;
     }
     if (has_right || has_reverse) {
-      //seconds *= edge->stopimpact(idx);
+      seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
 
