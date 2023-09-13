@@ -30,19 +30,21 @@ namespace {
 constexpr float kDefaultServicePenalty = 10.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 50.0f; // Seconds   #default 90.0
-constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
+constexpr float kDefaultLowClassPenalty = 25.0f; // Seconds   #default 90.0
+constexpr float kDefaultUseTolls = 1.0f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
-constexpr float kDefaultUseLivingStreets = 0.2f;   // Avoid living streets by default. Factor between 0 and 1
+constexpr float kDefaultUseLivingStreets = 0.6f;   // Avoid living streets by default. Factor between 0 and 1
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
+constexpr float kDefaultLeftTurnPenalty = 30.0f; // in seconds and default = 30
+
 
 // Default turn costs
 constexpr float kTCStraight = 0.7f;
 constexpr float kTCSlight = 1.0f;
-constexpr float kTCFavorable = 1.0f;
+constexpr float kTCFavorable = 1.1f;
 constexpr float kTCFavorableSharp = 1.5f;
 constexpr float kTCCrossing = 2.5f;  // # Original = 3.5
-constexpr float kTCUnfavorable = 2.5f;  // #Original = 2.5f
+constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
 
@@ -63,15 +65,15 @@ constexpr float kLeftSideTurnCosts[] = {kTCStraight,         kTCSlight,  kTCUnfa
                                         kTCFavorable,        kTCSlight};
 
 // How much to favor truck routes.
-constexpr float kTruckRouteFactor = 0.85f;
+constexpr float kTruckRouteFactor = 0.0f;
 
 constexpr float kHighwayFactor[] = {
-    0.0f, // Motorway
-    0.1f, // Trunk
-    0.4f, // Primary  #Original=0.0f
+    -0.2f, // Motorway
+    -0.2f, // Trunk
+    0.5f, // Primary  #Original=0.0f
     0.6f, // Secondary
     0.7, // Tertiary
-    0.9, // Unclassified
+    0.8, // Unclassified
     0.9, // Residential
     1.0f  // Service, other
 };
@@ -96,6 +98,8 @@ constexpr ranged_default_t<float> kTruckLengthRange{0, kDefaultTruckLength, 50.0
 constexpr ranged_default_t<float> kUseTollsRange{0, kDefaultUseTolls, 1.0f};
 constexpr ranged_default_t<uint8_t> kAxleCountRange{2, kDefaultAxleCount, 20};
 constexpr ranged_default_t<float> kUseHighwaysRange{0, kDefaultUseHighways, 1.0f};
+constexpr ranged_default_t<float> kLeftTurnPenaltyRange{0, kDefaultLeftTurnPenalty, 5000.0f};
+
 
 BaseCostingOptionsConfig GetBaseCostOptsConfig() {
   BaseCostingOptionsConfig cfg{};
@@ -350,7 +354,10 @@ TruckCost::TruckCost(const Costing& costing)
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
     LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
   }
-  
+  // Added by Kashian
+  // To avoid left turns and adding a cost in seconds. 
+  float left_turn_penalty = costing_options.left_turn_penalty();
+
 
   // Preference to use toll roads (separate from toll booth penalty). Sets a toll
   // factor. A toll factor of 0 would indicate no adjustment to weighting for toll roads.
@@ -563,9 +570,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
 
     if ((edge->use() != Use::kRamp && pred.use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred.use() != Use::kRamp)) {
-      turn_cost += 15.f;
+      turn_cost += 5.f;
       if (edge->roundabout())
-        turn_cost += 60.f;
+        turn_cost += 25.f;
     }
 
     float seconds = turn_cost;
@@ -579,16 +586,14 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
-    float left_turn_penalty = 90.0f;  //#Cost for left turn transition
+    //float left_turn_penalty = 30.0f;  //#Cost for left turn transition
     if (has_right || has_reverse) {
       LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
-
-      //seconds *= edge->stopimpact(idx);
-      
+      seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
     if (has_left) {
-      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));   //# Added by kashian 
+      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty;
       is_turn = true;
@@ -650,9 +655,9 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
     if ((edge->use() != Use::kRamp && pred->use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred->use() != Use::kRamp)) {
-      turn_cost += 15.f;
+      turn_cost += 5.f;
       if (edge->roundabout())
-        turn_cost += 60.f;
+        turn_cost += 25.f;
     }
 
     float seconds = turn_cost;
@@ -667,7 +672,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
 
-    float left_turn_penalty = 90.0f;
+    float left_turn_penalty = 30.0f;
     if (has_left) {
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty;
@@ -727,6 +732,8 @@ void ParseTruckCostOptions(const rapidjson::Document& doc,
   JSON_PBF_RANGED_DEFAULT(co, kTruckLengthRange, json, "/length", length);
   JSON_PBF_RANGED_DEFAULT(co, kUseTollsRange, json, "/use_tolls", use_tolls);
   JSON_PBF_RANGED_DEFAULT(co, kUseHighwaysRange, json, "/use_highways", use_highways);
+  JSON_PBF_RANGED_DEFAULT(co, kLeftTurnPenaltyRange, json, "/left_turn_penalty", left_turn_penalty);
+  
   co->set_axle_count(
       kAxleCountRange(rapidjson::get<uint32_t>(json, "/axle_count", co->axle_count())));
 }
