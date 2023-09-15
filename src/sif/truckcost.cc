@@ -39,11 +39,11 @@ constexpr float kDefaultLeftTurnPenalty = 30.0f; // in seconds and default = 30
 
 
 // Default turn costs
-constexpr float kTCStraight = 0.7f;
-constexpr float kTCSlight = 1.0f;
-constexpr float kTCFavorable = 1.1f;
-constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 2.5f;  // # Original = 3.5
+constexpr float kTCStraight = 0.5f;
+constexpr float kTCSlight = 1.5f;
+constexpr float kTCFavorable = 1.8f;
+constexpr float kTCFavorableSharp = 1.9f;
+constexpr float kTCCrossing = 3.5f;  // # Original = 3.5
 constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
 constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
 constexpr float kTCReverse = 9.5f;
@@ -68,14 +68,14 @@ constexpr float kLeftSideTurnCosts[] = {kTCStraight,         kTCSlight,  kTCUnfa
 constexpr float kTruckRouteFactor = 0.0f;
 
 constexpr float kHighwayFactor[] = {
-    -0.2f, // Motorway
-    -0.2f, // Trunk
-    0.5f, // Primary  #Original=0.0f
-    0.6f, // Secondary
-    0.7, // Tertiary
-    0.8, // Unclassified
-    0.9, // Residential
-    1.0f  // Service, other
+    -0.8f, // Motorway
+    -0.8f, // Trunk
+    1.0f, // Primary  #Original=0.0f
+    1.4f, // Secondary
+    1.6, // Tertiary
+    2.0, // Unclassified
+    2.5, // Residential
+    2.0f  // Service, other
 };
 
 constexpr float kSurfaceFactor[] = {
@@ -572,9 +572,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
 
     if ((edge->use() != Use::kRamp && pred.use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred.use() != Use::kRamp)) {
-      turn_cost += 5.f;
+      turn_cost += 50.f;
       if (edge->roundabout())
-        turn_cost += 25.f;
+        turn_cost += 95.f;
     }
 
     float seconds = turn_cost;
