@@ -30,30 +30,29 @@ namespace {
 constexpr float kDefaultServicePenalty = 10.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 25.0f; // Seconds   #default 90.0
-constexpr float kDefaultUseTolls = 1.0f;         // Factor between 0 and 1
+constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds   #default 90.0
+constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
-constexpr float kDefaultUseLivingStreets = 0.6f;   // Avoid living streets by default. Factor between 0 and 1
+constexpr float kDefaultUseLivingStreets = 0.f;   // Avoid living streets by default. Factor between 0 and 1
 constexpr float kDefaultUseHighways = 1.0f; // Factor between 0 and 1
 constexpr float kDefaultLeftTurnPenalty = 30.0f; // in seconds and default = 30
 
-
 // Default turn costs
 constexpr float kTCStraight = 0.5f;
-constexpr float kTCSlight = 1.5f;
-constexpr float kTCFavorable = 1.8f;
-constexpr float kTCFavorableSharp = 1.9f;
-constexpr float kTCCrossing = 3.5f;  // # Original = 3.5
-constexpr float kTCUnfavorable = 3.5f;  // #Original = 2.5f
-constexpr float kTCUnfavorableSharp = 4.5f;  //Original = 3.5f
+constexpr float kTCSlight = 0.75f;
+constexpr float kTCFavorable = 1.0f;
+constexpr float kTCFavorableSharp = 1.5f;
+constexpr float kTCCrossing = 2.0f;
+constexpr float kTCUnfavorable = 2.5f;
+constexpr float kTCUnfavorableSharp = 3.5f;
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
 constexpr float kDefaultTruckWeight = 21.77f;  // Metric Tons (48,000 lbs)
 constexpr float kDefaultTruckAxleLoad = 7.5f; // Metric Tons (20,000 lbs)  #Default 9.07
 constexpr float kDefaultTruckHeight = 4.0f;   // Meters (13 feet 6 inches) #Default 4.11
-constexpr float kDefaultTruckWidth = 2.6f;     // Meters (102.36 inches)
-constexpr float kDefaultTruckLength = 21.64f;  // Meters (71 feet)
+constexpr float kDefaultTruckWidth = 2.7f;     // Meters (102.36 inches)
+constexpr float kDefaultTruckLength = 10.5f;  // Meters (71 feet)
 constexpr uint8_t kDefaultAxleCount = 2;       // 5 axles for above truck config
 
 // Turn costs based on side of street driving
@@ -65,17 +64,17 @@ constexpr float kLeftSideTurnCosts[] = {kTCStraight,         kTCSlight,  kTCUnfa
                                         kTCFavorable,        kTCSlight};
 
 // How much to favor truck routes.
-constexpr float kTruckRouteFactor = 0.0f;
+constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
-    -0.8f, // Motorway
-    -0.8f, // Trunk
-    1.0f, // Primary  #Original=0.0f
-    1.4f, // Secondary
-    1.6, // Tertiary
-    2.0, // Unclassified
-    2.5, // Residential
-    2.0f  // Service, other
+    1.0f, // Motorway
+    0.5f, // Trunk
+    0.0f, // Primary
+    0.0f, // Secondary
+    0.0f, // Tertiary
+    0.0f, // Unclassified
+    0.0f, // Residential
+    0.0f  // Service, other
 };
 
 constexpr float kSurfaceFactor[] = {
@@ -490,7 +489,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                         : fixed_speed_;
 
   auto final_speed = std::min(edge_speed, top_speed_);
-  float all_edges_factor = 1.0f;  // #Original - Not exist - Added by Kashian
+  float all_edges_factor = 1.0f;  // #Added by Kashian : reflects a factor for accumulation of duration cost 
   float sec = edge->length() * speedfactor_[final_speed];
   float sec_cost = sec * all_edges_factor;  // #Added by kashian  
 
@@ -572,9 +571,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
 
     if ((edge->use() != Use::kRamp && pred.use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred.use() != Use::kRamp)) {
-      turn_cost += 50.f;
+      turn_cost += 1.5f;
       if (edge->roundabout())
-        turn_cost += 95.f;
+        turn_cost += 0.5f;
     }
 
     float seconds = turn_cost;
@@ -657,9 +656,9 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
     if ((edge->use() != Use::kRamp && pred->use() == Use::kRamp) ||
         (edge->use() == Use::kRamp && pred->use() != Use::kRamp)) {
-      turn_cost += 5.f;
+      turn_cost += 1.5f;
       if (edge->roundabout())
-        turn_cost += 25.f;
+        turn_cost += 0.5f;
     }
 
     float seconds = turn_cost;
