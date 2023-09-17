@@ -506,6 +506,8 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
       factor = rail_ferry_factor_;
       break;
     default:
+      // Added by kashian: Explaination of factor
+      // if use_highway = 1 -> highway_factor_ = -0.125 and KHighwayFactor if equal to 1, a negative factor is added up which will lead to lower factor for highways. 
       factor = density_factor_[edge->density()] +
                highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())] +
                kSurfaceFactor[static_cast<uint32_t>(edge->surface())] +
@@ -576,6 +578,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
         turn_cost += 0.5f;
     }
 
+    // has_sharp_left and has_sharp_righ are added by kashian
     float seconds = turn_cost;
     bool is_turn = false;
     bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft);
@@ -603,7 +606,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     if (has_reverse) {
       //LOG_WARN("It has reverse maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      seconds += 800;
+      seconds += 800.0f;
       is_turn = true;
     }
 
