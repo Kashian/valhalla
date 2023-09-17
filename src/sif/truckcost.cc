@@ -597,7 +597,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     if (has_sharp_right) {
       //LOG_WARN("It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      seconds += 200
+      seconds += 200.0f;
       is_turn = true;
     }
     if (has_reverse) {
@@ -617,7 +617,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     if (has_sharp_left) {
       //LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      seconds += left_turn_penalty_ 
+      seconds += left_turn_penalty_;
       seconds += 300.0f;
       is_turn = true;
     }
