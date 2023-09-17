@@ -30,7 +30,7 @@ namespace {
 constexpr float kDefaultServicePenalty = 10.0f; // Seconds
 
 // Other options
-constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds   #default 90.0
+constexpr float kDefaultLowClassPenalty = 30.0f; // Seconds   
 constexpr float kDefaultUseTolls = 0.5f;         // Factor between 0 and 1
 constexpr float kDefaultUseTracks = 0.f;         // Avoid tracks by default. Factor between 0 and 1
 constexpr float kDefaultUseLivingStreets = 0.f;   // Avoid living streets by default. Factor between 0 and 1
@@ -41,10 +41,10 @@ constexpr float kDefaultLeftTurnPenalty = 30.0f; // in seconds and default = 30
 constexpr float kTCStraight = 0.5f;
 constexpr float kTCSlight = 0.75f;
 constexpr float kTCFavorable = 1.0f;
-constexpr float kTCFavorableSharp = 1.5f;
-constexpr float kTCCrossing = 2.0f;
-constexpr float kTCUnfavorable = 2.5f;
-constexpr float kTCUnfavorableSharp = 3.5f;
+constexpr float kTCFavorableSharp = 2.5f;
+constexpr float kTCCrossing = 2.5f;
+constexpr float kTCUnfavorable = 3.5f;
+constexpr float kTCUnfavorableSharp = 4.5f;
 constexpr float kTCReverse = 9.5f;
 
 // Default truck attributes
@@ -68,7 +68,7 @@ constexpr float kTruckRouteFactor = 0.85f;
 
 constexpr float kHighwayFactor[] = {
     1.0f, // Motorway
-    0.5f, // Trunk
+    0.7f, // Trunk
     0.0f, // Primary
     0.0f, // Secondary
     0.0f, // Tertiary
@@ -352,11 +352,11 @@ TruckCost::TruckCost(const Costing& costing)
   if (use_highways >= 0.5f) {
     float f = (0.5f - use_highways);
     highway_factor_ = f * f * f;
-    LOG_WARN("======> Use Highways >0.5 " + std::to_string(highway_factor_));
+    //LOG_WARN("======> Use Highways >0.5 " + std::to_string(highway_factor_));
   } else {
     float f = 1.0f - (use_highways * 2.0f);
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
-    LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
+    //LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
   }
 
 
@@ -510,10 +510,10 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
                highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())] +
                kSurfaceFactor[static_cast<uint32_t>(edge->surface())] +
                SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed);
-      LOG_WARN("# Density Factor:" + std::to_string(density_factor_[edge->density()])+ "  highway_factor: "+ std::to_string(highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())]) + "   Surface Factor:"+std::to_string(kSurfaceFactor[static_cast<uint32_t>(edge->surface())]) + " Total factor:"+std::to_string(factor) );
+      //LOG_WARN("# Density Factor:" + std::to_string(density_factor_[edge->density()])+ "  highway_factor: "+ std::to_string(highway_factor_ * kHighwayFactor[static_cast<uint32_t>(edge->classification())]) + "   Surface Factor:"+std::to_string(kSurfaceFactor[static_cast<uint32_t>(edge->surface())]) + " Total factor:"+std::to_string(factor) );
       break;
   }
-  LOG_WARN("### Speed Penalty: " + std::to_string(SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed)));
+  //LOG_WARN("### Speed Penalty: " + std::to_string(SpeedPenalty(edge, tile, time_info, flow_sources, edge_speed)));
   if (edge->truck_route() > 0) {
     factor *= kTruckRouteFactor;
   }
@@ -534,7 +534,7 @@ Cost TruckCost::EdgeCost(const baldr::DirectedEdge* edge,
     // Add a penalty for traversing a closed edge
     factor *= closure_factor_;
   }
-  LOG_WARN("Edge cost: " + std::to_string(sec_cost * factor)+ "    factor: "+ std::to_string(factor)+  " duration: " +std::to_string(sec));
+  //LOG_WARN("Edge cost: " + std::to_string(sec_cost * factor)+ "    factor: "+ std::to_string(factor)+  " duration: " +std::to_string(sec));
 
   return {sec_cost * factor, sec};
 }
@@ -554,7 +554,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
   if (edge->classification() == baldr::RoadClass::kResidential ||
       edge->classification() == baldr::RoadClass::kServiceOther ||
       edge->classification() == baldr::RoadClass::kTertiary) {
-        LOG_WARN("Low class penalty is applied: " + std::to_string(low_class_penalty_));
+        //LOG_WARN("Low class penalty is applied: " + std::to_string(low_class_penalty_));
         c.cost += low_class_penalty_;
   }
 
@@ -578,34 +578,65 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
 
     float seconds = turn_cost;
     bool is_turn = false;
-    bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft ||
-                     edge->turntype(idx) == baldr::Turn::Type::kSharpLeft);
-    bool has_right = (edge->turntype(idx) == baldr::Turn::Type::kRight ||
-                      edge->turntype(idx) == baldr::Turn::Type::kSharpRight);
+    bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft);
+    bool has_sharp_left = (edge->turntype(idx) == baldr::Turn::Type::kSharpLeft);
+    bool has_right = (edge->turntype(idx) == baldr::Turn::Type::kRight);
+    bool has_sharp_right = (edge->turntype(idx) == baldr::Turn::Type::kSharpRight);
     bool has_reverse = edge->turntype(idx) == baldr::Turn::Type::kReverse;
 
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
     // Still want to add a penalty so routes avoid high cost intersections.
     //float left_turn_penalty = 30.0f;  //#Cost for left turn transition
-    if (has_right || has_reverse) {
-      LOG_WARN("It has right turn or revers maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
+    if (has_right) {
+      //LOG_WARN("It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
+
+    if (has_sharp_right) {
+      //LOG_WARN("It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
+      seconds *= edge->stopimpact(idx);
+      seconds += 200
+      is_turn = true;
+    }
+    if (has_reverse) {
+      //LOG_WARN("It has reverse maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))));   //# Added by kashian 
+      seconds *= edge->stopimpact(idx);
+      seconds += 800;
+      is_turn = true;
+    }
+
     if (has_left) {
-      LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
+      //LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty_;
       is_turn = true;
     }
+    
+    if (has_sharp_left) {
+      //LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
+      seconds *= edge->stopimpact(idx);
+      seconds += left_turn_penalty_ 
+      seconds += 300.0f;
+      is_turn = true;
+    }
+
+    if (has_sharp_right) {
+       has_left = true;
+    }
+
+    if (has_sharp_left) {
+      has_right = true;
+    }
+
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(), seconds);
 
     // Apply density factor and stop impact penalty if there isn't traffic on this edge or you're not
     // using traffic
     if (!pred.has_measured_speed()) {
-      LOG_WARN("Density penalty applied: " + std::to_string(trans_density_factor_[node->density()]));
+      //LOG_WARN("Density penalty applied: " + std::to_string(trans_density_factor_[node->density()]));
 
       if (!is_turn)
         seconds *= edge->stopimpact(idx);
@@ -613,7 +644,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     }
     c.cost += seconds;
   }
-  LOG_WARN("----> Transition cost: " + std::to_string(c.cost));
+  //LOG_WARN("----> Transition cost: " + std::to_string(c.cost));
   return c;
 }
 
@@ -643,7 +674,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
   // Transition time = turncost * stopimpact * densityfactor
   if (edge->stopimpact(idx) > 0 && !shortest_) {
-    LOG_WARN("Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+    //LOG_WARN("Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
 
     float turn_cost;
     if (edge->edge_to_right(idx) && edge->edge_to_left(idx)) {

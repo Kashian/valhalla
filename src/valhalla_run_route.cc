@@ -441,12 +441,8 @@ valhalla::DirectionsLeg DirectionsTest(valhalla::Api& api,
     ++m;
   }
   valhalla::midgard::logging::Log("==============================================", " [NARRATIVE] ");
-  valhalla::midgard::logging::Log("Total time: " + GetFormattedTime(trip_directions.summary().time()),
-                                  " [NARRATIVE] ");
-  valhalla::midgard::logging::Log((boost::format("Total length: %.1f %s") %
-                                   trip_directions.summary().length() % units)
-                                      .str(),
-                                  " [NARRATIVE] ");
+  valhalla::midgard::logging::Log("Total time: " + GetFormattedTime(trip_directions.summary().time()), " [NARRATIVE] ");
+  valhalla::midgard::logging::Log((boost::format("Total length: %.1f %s") % trip_directions.summary().length() % units) .str(),  " [NARRATIVE] ");
   if (origin.date_time_) {
     valhalla::midgard::logging::Log("Departed at: " + *origin.date_time_, " [NARRATIVE] ");
   }
