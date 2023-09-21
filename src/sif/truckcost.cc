@@ -575,7 +575,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
         (edge->use() == Use::kRamp && pred.use() != Use::kRamp)) {
       turn_cost += 1.5f;
       if (edge->roundabout())
-        turn_cost += 0.5f;
+        turn_cost += 2.5f;
     }
 
     // has_sharp_left and has_sharp_righ are added by kashian
@@ -692,7 +692,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
         (edge->use() == Use::kRamp && pred->use() != Use::kRamp)) {
       turn_cost += 1.5f;
       if (edge->roundabout())
-        turn_cost += 0.5f;
+        turn_cost += 2.5f;
     }
 
     float seconds = turn_cost;
