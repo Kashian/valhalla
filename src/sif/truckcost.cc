@@ -636,9 +636,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // }
 
     if (seconds >150) {
-        LOG_WARN("REVERSE 200: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        LOG_WARN("FORWARD 150: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
         if (has_right) {
-          LOG_WARN("REVERSE 200: It has right turn");  //# Added by kashian
+          LOG_WARN("FORWARD 150: It has right turn");  //# Added by kashian
         }
       }
 
@@ -727,9 +727,9 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
       is_turn = true;
     }
     if (seconds >150) {
-        LOG_WARN("REVERSE 200: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        LOG_WARN("REVERSE 150: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
         if (has_right) {
-          LOG_WARN("REVERSE 200: It has right turn");  //# Added by kashian
+          LOG_WARN("REVERSE 150: It has right turn");  //# Added by kashian
         }
       }
 
