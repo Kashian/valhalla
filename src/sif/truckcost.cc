@@ -756,7 +756,7 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
         if (has_right) {
           LOG_WARN("REVERSE 150: It has right turn");  //# Added by kashian
         }
-        if (has_leftt) {
+        if (has_left) {
           LOG_WARN("REVERSE 150: It has right turn");  //# Added by kashian
         }
 
