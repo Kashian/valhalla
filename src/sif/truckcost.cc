@@ -716,11 +716,17 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
 
     float seconds = turn_cost;
     bool is_turn = false;
-    bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft ||
-                     edge->turntype(idx) == baldr::Turn::Type::kSharpLeft);
-    bool has_right = (edge->turntype(idx) == baldr::Turn::Type::kRight ||
-                      edge->turntype(idx) == baldr::Turn::Type::kSharpRight);
+    bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft);
+    bool has_sharp_left = (edge->turntype(idx) == baldr::Turn::Type::kSharpLeft);
+    bool has_right = (edge->turntype(idx) == baldr::Turn::Type::kRight);
+    bool has_sharp_right = (edge->turntype(idx) == baldr::Turn::Type::kSharpRight);
     bool has_reverse = edge->turntype(idx) == baldr::Turn::Type::kReverse;
+
+    // bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft ||
+    //                  edge->turntype(idx) == baldr::Turn::Type::kSharpLeft);
+    // bool has_right = (edge->turntype(idx) == baldr::Turn::Type::kRight ||
+    //                   edge->turntype(idx) == baldr::Turn::Type::kSharpRight);
+    // bool has_reverse = edge->turntype(idx) == baldr::Turn::Type::kReverse;
 
     // Separate time and penalty when traffic is present. With traffic, edge speeds account for
     // much of the intersection transition time (TODO - evaluate different elapsed time settings).
