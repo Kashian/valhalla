@@ -634,13 +634,24 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // if (has_sharp_left) {
     //   has_right = true;
     // }
+    if (has_sharp_left){
+      has_left = true;
+    }
+
+    if (has_sharp_right){
+      has_right = true;
+    }
 
     if (seconds >150) {
-        LOG_WARN("FORWARD 150: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        LOG_WARN("FORWARD 150: Stop impact: " + std::to_string(edge->stopimpact(idx)) +  "    seconds: "+ std::to_string(seconds) );  //# Added by kashian
         if (has_right) {
           LOG_WARN("FORWARD 150: It has right turn");  //# Added by kashian
         }
+        if (has_left) {
+          LOG_WARN("FORWARD 150: It has left turn");  //# Added by kashian
+        }
       }
+
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(), seconds);
 
@@ -719,19 +730,33 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     if (has_left) {
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty_;
-
       is_turn = true;
     }
     if (has_right || has_reverse) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
+    
+    if (has_sharp_left){
+      has_left = true;
+    }
+    
+    if (has_sharp_right){
+      has_right = true;
+    }
+
     if (seconds >150) {
-        LOG_WARN("REVERSE 150: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        LOG_WARN("REVERSE 150: Stop impact: " + std::to_string(edge->stopimpact(idx))+  "    seconds: "+ std::to_string(seconds));  //# Added by kashian
         if (has_right) {
           LOG_WARN("REVERSE 150: It has right turn");  //# Added by kashian
         }
+        if (has_leftt) {
+          LOG_WARN("REVERSE 150: It has right turn");  //# Added by kashian
+        }
+
       }
+
+
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, internal_turn, seconds);
 
