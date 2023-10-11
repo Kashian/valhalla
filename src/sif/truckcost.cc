@@ -592,9 +592,9 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Still want to add a penalty so routes avoid high cost intersections.
     //float left_turn_penalty = 30.0f;  //#Cost for left turn transition
     if (has_right) {
-      LOG_WARN("1- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:",std::to_string(seconds));  //# Added by kashian 
+      LOG_WARN("1- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      LOG_WARN("2- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:",std::to_string(seconds));  //# Added by kashian 
+      LOG_WARN("2- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
       is_turn = true;
       
     }
