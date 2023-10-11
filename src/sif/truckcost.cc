@@ -592,11 +592,10 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Still want to add a penalty so routes avoid high cost intersections.
     //float left_turn_penalty = 30.0f;  //#Cost for left turn transition
     if (has_right) {
-      LOG_WARN("1- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
+      //LOG_WARN("1- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      LOG_WARN("2- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
+      //LOG_WARN("2- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:"+std::to_string(seconds));  //# Added by kashian 
       is_turn = true;
-      
     }
 
     if (has_sharp_right) {
@@ -604,8 +603,8 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       seconds *= edge->stopimpact(idx);
       seconds += 25.0f;
       is_turn = true;
-      
     }
+
     if (has_reverse) {
       //LOG_WARN("It has reverse maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
@@ -636,6 +635,12 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     //   has_right = true;
     // }
 
+    if (seconds >150) {
+        LOG_WARN("REVERSE 200: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        if (has_right) {
+          LOG_WARN("REVERSE 200: It has right turn");  //# Added by kashian
+        }
+      }
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(), seconds);
 
@@ -714,12 +719,19 @@ Cost TruckCost::TransitionCostReverse(const uint32_t idx,
     if (has_left) {
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty_;
+
       is_turn = true;
     }
     if (has_right || has_reverse) {
       seconds *= edge->stopimpact(idx);
       is_turn = true;
     }
+    if (seconds >150) {
+        LOG_WARN("REVERSE 200: Stop impact: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian
+        if (has_right) {
+          LOG_WARN("REVERSE 200: It has right turn");  //# Added by kashian
+        }
+      }
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, internal_turn, seconds);
 
