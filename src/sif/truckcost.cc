@@ -578,7 +578,7 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
         turn_cost += 2.5f;
     }
 
-    // has_sharp_left and has_sharp_righ are added by kashian
+    // has_sharp_left and has_sharp_right are added by kashian
     float seconds = turn_cost;
     bool is_turn = false;
     bool has_left = (edge->turntype(idx) == baldr::Turn::Type::kLeft);
@@ -592,16 +592,19 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
     // Still want to add a penalty so routes avoid high cost intersections.
     //float left_turn_penalty = 30.0f;  //#Cost for left turn transition
     if (has_right) {
-      //LOG_WARN("It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
+      LOG_WARN("1- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:",std::to_string(seconds));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
+      LOG_WARN("2- It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx))+"  and seconds:",std::to_string(seconds));  //# Added by kashian 
       is_turn = true;
+      
     }
 
     if (has_sharp_right) {
       //LOG_WARN("It has right turn and stop impact is: " + std::to_string(edge->stopimpact(idx)));  //# Added by kashian 
       seconds *= edge->stopimpact(idx);
-      seconds += 200.0f;
+      seconds += 25.0f;
       is_turn = true;
+      
     }
     if (has_reverse) {
       //LOG_WARN("It has reverse maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))));   //# Added by kashian 
@@ -621,17 +624,17 @@ Cost TruckCost::TransitionCost(const baldr::DirectedEdge* edge,
       //LOG_WARN("It has left turn maneuvers and stop impact is: " + std::to_string(edge->stopimpact(idx))+"   "+std::to_string(left_turn_penalty_));   //# Added by kashian 
       seconds *= edge->stopimpact(idx);
       seconds += left_turn_penalty_;
-      seconds += 300.0f;
+      seconds += 30.0f;
       is_turn = true;
     }
 
-    if (has_sharp_right) {
-       has_left = true;
-    }
+    // if (has_sharp_right) {
+    //    has_left = true;
+    // }
 
-    if (has_sharp_left) {
-      has_right = true;
-    }
+    // if (has_sharp_left) {
+    //   has_right = true;
+    // }
 
 
     AddUturnPenalty(idx, node, edge, has_reverse, has_left, has_right, true, pred.internal_turn(), seconds);
