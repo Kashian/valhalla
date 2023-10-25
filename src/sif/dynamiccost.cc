@@ -72,6 +72,7 @@ constexpr float kMaxLivingStreetFactor = 3.f;
 // min factor to apply when use lit
 constexpr float kMinLitFactor = 1.f;
 
+
 constexpr float kMinFactor = 0.1f;
 constexpr float kMaxFactor = 100000.0f;
 

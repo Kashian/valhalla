@@ -326,6 +326,8 @@ TruckCost::TruckCost(const Costing& costing)
   // Added by Kashian
   // To avoid left turns and adding a cost in seconds. 
   left_turn_penalty_ = costing_options.left_turn_penalty();
+  
+  LOG_WARN("Left Turn Penalty"+ std::to_string(left_turn_penalty_) );  //# Added by kashian
 
   // Get the vehicle attributes
   hazmat_ = costing_options.hazmat();
@@ -352,11 +354,11 @@ TruckCost::TruckCost(const Costing& costing)
   if (use_highways >= 0.5f) {
     float f = (0.5f - use_highways);
     highway_factor_ = f * f * f;
-    //LOG_WARN("======> Use Highways >0.5 " + std::to_string(highway_factor_));
+    LOG_WARN("======> Use Highways >0.5 " + std::to_string(highway_factor_));
   } else {
     float f = 1.0f - (use_highways * 2.0f);
     highway_factor_ = kMaxHighwayBiasFactor * (f * f);
-    //LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
+    LOG_WARN("======> Use Highways Less than 0.5 " + std::to_string(highway_factor_));
   }
 
 
