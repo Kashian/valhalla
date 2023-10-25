@@ -328,7 +328,7 @@ TruckCost::TruckCost(const Costing& costing)
   left_turn_penalty_ = costing_options.left_turn_penalty();
   
   LOG_WARN("Left Turn Penalty"+ std::to_string(left_turn_penalty_) );  //# Added by kashian
-
+  LOG_WARN("Checking the compile");  //# Added by kashian
   // Get the vehicle attributes
   hazmat_ = costing_options.hazmat();
   weight_ = costing_options.weight();
