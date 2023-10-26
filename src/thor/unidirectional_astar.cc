@@ -361,8 +361,8 @@ inline bool UnidirectionalAStar<expansion_direction, FORWARD>::ExpandInner(
 template <>
 std::vector<PathInfo> UnidirectionalAStar<ExpansionType::forward>::FormPath(const uint32_t dest) {
   // Metrics to track
-  LOG_DEBUG("path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
-  LOG_DEBUG("path_iterations::" + std::to_string(edgelabels_.size()));
+  LOG_DEBUG("UnidirectionalAStar path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
+  LOG_DEBUG("UnidirectionalAStar path_iterations::" + std::to_string(edgelabels_.size()));
 
   // Work backwards from the destination
   std::vector<PathInfo> path;

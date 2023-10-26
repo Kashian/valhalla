@@ -840,8 +840,8 @@ bool MultiModalPathAlgorithm::CanReachDestination(const valhalla::Location& dest
 // Form the path from the adjacency list.
 std::vector<PathInfo> MultiModalPathAlgorithm::FormPath(const uint32_t dest) {
   // Metrics to track
-  LOG_DEBUG("path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
-  LOG_DEBUG("path_iterations::" + std::to_string(edgelabels_.size()));
+  LOG_DEBUG("MultiModalPathAlgorithm path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
+  LOG_DEBUG("MultiModalPathAlgorithm path_iterations::" + std::to_string(edgelabels_.size()));
 
   // Work backwards from the destination
   std::vector<PathInfo> path;

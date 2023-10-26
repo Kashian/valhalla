@@ -523,8 +523,8 @@ uint32_t AStarBSSAlgorithm::SetDestination(GraphReader& graphreader, const valha
 std::vector<PathInfo> AStarBSSAlgorithm::FormPath(baldr::GraphReader& graphreader,
                                                   const uint32_t dest) {
   // Metrics to track
-  LOG_DEBUG("path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
-  LOG_DEBUG("path_iterations::" + std::to_string(edgelabels_.size()));
+  LOG_DEBUG("AStarBSSAlgorithm path_cost::" + std::to_string(edgelabels_[dest].cost().cost));
+  LOG_DEBUG("AStarBSSAlgorithm path_iterations::" + std::to_string(edgelabels_.size()));
 
   // Work backwards from the destination
   std::vector<PathInfo> path;
