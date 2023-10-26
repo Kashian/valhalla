@@ -68,7 +68,7 @@ void Configure(const LoggingConfig& config);
 #ifndef LOGGING_LEVEL_INFO
 #ifndef LOGGING_LEVEL_DEBUG
 #ifndef LOGGING_LEVEL_TRACE
-#define LOGGING_LEVEL_INFO
+#define LOGGING_LEVEL_TRACE
 #endif
 #endif
 #endif
